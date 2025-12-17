@@ -1,34 +1,39 @@
 pipeline {
     agent any
-
+    
     tools {
-        maven 'M2_HOME'
+        maven 'M2_HOME'  // Vérifie que ce nom correspond à ta config Maven dans Jenkins
     }
-
+    
     stages {
-
-        stage('Checkout Git') {
+        stage('GIT') {
             steps {
-                git 'https://github.com/Ahmedbenjannet/Devops.git'
+                git branch: 'ProjetSpring',
+                    url: 'https://github.com/Ahmedbenjannet/Devops.git'
             }
         }
-
-        stage('Maven Clean Compile') {
+        
+        stage('MVN CLEAN') {
             steps {
-                bat 'mvn clean compile'
+                bat 'mvn clean'
             }
         }
-
+        
+        stage('MVN COMPILE') {
+            steps {
+                bat 'mvn compile'
+            }
+        }
+        
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    bat '''
+                    bat """
                     mvn sonar:sonar ^
                     -Dsonar.projectKey=devops-project ^
                     -Dsonar.projectName=DevOps ^
-                    -Dsonar.host.url=http://localhost:9000 ^
-                    -Dsonar.login=SONAR_TOKEN
-                    '''
+                    -Dsonar.host.url=http://192.168.56.10:9000
+                    """
                 }
             }
         }
